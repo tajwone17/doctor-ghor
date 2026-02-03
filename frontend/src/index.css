@@ -1,5 +1,8 @@
 @import "tailwindcss";
-
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+  font-family: Outfit;
+}
 @theme {
   --color-primary: #2fae8e;
 
