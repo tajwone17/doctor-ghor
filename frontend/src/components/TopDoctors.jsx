@@ -31,7 +31,7 @@ const TopDoctors = () => {
                 className={`flex items-center gap-2 text-sm text-center  ${doctor.status == "Available" ? "text-green-500" : "text-red-500"}`}
               >
                 <p
-                  className={`w-2 h-2 ${doctor.status == "Available" ? "bg-green-500" : "bg-red-500"} rounded-full`}
+                  className={`w-2 h-2 ${doctor.status == "Available" ? "bg-blue-500" : "bg-red-500"} rounded-full`}
                 ></p>
                 <p>{doctor.status}</p>
               </div>
@@ -42,8 +42,11 @@ const TopDoctors = () => {
         ))}
       </div>
       <button
-        onClick={() => { navigate("/doctors"); scrollTo(0,0); }}
-        className="bg-green-50 text-green-700 px-12 py-3 rounded-full mt-10 border border-green-700 cursor-pointer hover:bg-primary hover:text-white"
+        onClick={() => {
+          navigate("/doctors");
+          scrollTo(0, 0);
+        }}
+        className="bg-blue-50 text-blue-700 px-12 py-3 rounded-full mt-10 border border-blue-700 cursor-pointer hover:bg-primary hover:text-white"
       >
         {" "}
         See more
