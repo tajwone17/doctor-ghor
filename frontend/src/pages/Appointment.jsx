@@ -52,7 +52,7 @@ const Appointment = () => {
     return slots;
   }, [doctorInfo]);
   const [slotIndex, setSlotIndex] = useState(0);
- 
+  const [slotTime, setSlotTime] = useState("");
 
   // Group slots by date
   const groupedSlots = useMemo(() => {
@@ -145,10 +145,16 @@ const Appointment = () => {
                 </div>
               ))}
           </div>
-          <div>
+          <div className="flex items-center gap-3 w-full overflow-x-scroll mt-4">
             {groupedSlots.length > 0 &&
               groupedSlots[slotIndex].times.map((slot, index) => (
-                <p key={index}>{slot.formattedTime}</p>
+                <p
+                  onClick={() => setSlotTime(slot.formattedTime)}
+                  className={`text-sm font-light rounded-full cursor-pointer shrink-0 px-5 py-2 ${slot.formattedTime === slotTime ? "bg-primary text-white" : "border border-gray-300 text-gray-400"}`}
+                  key={index}
+                >
+                  {slot.formattedTime}
+                </p>
               ))}
           </div>
         </div>
