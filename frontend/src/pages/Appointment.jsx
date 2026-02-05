@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContextInstance";
 import { assets } from "../assets/assets_frontend/assets";
+import RelatedDoctors from "../components/RelatedDoctors";
 const Appointment = () => {
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const { docId } = useParams();
@@ -157,7 +158,10 @@ const Appointment = () => {
                 </p>
               ))}
           </div>
+          <button className="bg-primary text-white text-sm px-14 rounded-full font-light py-3 my-6 cursor-pointer hover:bg-white hover:border hover:border-primary hover:text-primary">Book an Appointment</button>
         </div>
+        {/* Listing related doctors */}
+        <RelatedDoctors docId={docId} speciality={doctorInfo?.speciality} />
       </div>
     )
   );
