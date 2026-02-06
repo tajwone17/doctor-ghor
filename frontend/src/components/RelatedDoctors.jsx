@@ -37,7 +37,7 @@ const RelatedDoctors = ({docId, speciality}) => {
                 className={`flex items-center gap-2 text-sm text-center  ${doctor.status == "Available" ? "text-green-500" : "text-red-500"}`}
               >
                 <p
-                  className={`w-2 h-2 ${doctor.status == "Available" ? "bg-blue-500" : "bg-red-500"} rounded-full`}
+                  className={`w-2 h-2 ${doctor.status == "Available" ? "bg-green-500" : "bg-red-500"} rounded-full`}
                 ></p>
                 <p>{doctor.status}</p>
               </div>
