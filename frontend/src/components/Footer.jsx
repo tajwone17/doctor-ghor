@@ -10,9 +10,7 @@ const Footer = () => {
 
           <p className="text-gray-600 w-full md:w-2/3 leading-6">
             Welcome to our website, your go-to platform for all your healthcare
-            needs. We provide comprehensive information and resources to help
-            you make informed decisions about your health. Book appointments,
-            explore specialties, and connect with trusted doctors with ease.
+            needs.
           </p>
         </div>
         {/* -----Center Section----- */}
