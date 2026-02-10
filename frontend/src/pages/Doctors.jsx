@@ -7,7 +7,7 @@ const Doctors = () => {
   const [filteredDoc, setFilteredDoc] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-
+  const [showFilter, setShowFilter] = useState(false);
   const applyFilter = () => {
     let filtered = doctors;
 
@@ -48,8 +48,16 @@ const Doctors = () => {
           className="w-full sm:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         />
       </div>
+      <button
+        className={`py-1 px-3 border rounded transition-all sm:hidden text-sm ${showFilter ? "bg-primary text-white" : ""}`}
+        onClick={() => setShowFilter((prev) => !prev)}
+      >
+        Filters
+      </button>
       <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
-        <div className="flex flex-col gap-4 text-sm text gray-600">
+        <div
+          className={`flex flex-col gap-4 text-sm text gray-600 ${showFilter ? "block" : "hidden"} sm:block`}
+        >
           <p
             onClick={() =>
               speciality !== "General Physician"
