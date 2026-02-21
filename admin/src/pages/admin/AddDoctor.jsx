@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { toast } from "react-toastify";
+import { AdminContext } from "../../context/AdminContextInstance";
 import { assets } from "../../assets/assets";
+import axios from "axios";
 const AddDoctor = () => {
   const [docImg, setDocImg] = useState(false);
   const [name, setName] = useState("");
@@ -12,11 +15,58 @@ const AddDoctor = () => {
   const [speciality, setSpeciality] = useState("General Physician");
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
-const onSubmitHandler=async(e)=>{
-  e.preventDefault()
+  const { BACKEND_URL, aToken } = useContext(AdminContext);
 
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      if (!docImg) {
+        return toast.error("Please upload doctor image");
+      }
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("experience", experience);
+      formData.append("fees", Number(fees));
+      formData.append("about", about);
+      formData.append("degree", degree);
+      formData.append("speciality", speciality);
+      formData.append(
+        "address",
+        JSON.stringify({ line1: address1, line2: address2 }),
+      );
+      formData.append("image", docImg);
 
-}
+      const { data } = await axios.post(
+        `${BACKEND_URL}/api/admin/add-doctor`,
+        formData,
+        {
+          headers: {
+            aToken,
+          },
+        },
+      );
+      if (data.success) {
+        toast.success(data.message);
+        setName("");
+        setEmail("");
+        setPassword("");
+        setExperience("1 Year");
+        setFees("");
+        setAbout("");
+        setDegree("");
+        setSpeciality("General Physician");
+        setAddress1("");
+        setAddress2("");
+        setDocImg(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  };
   return (
     <form onSubmit={onSubmitHandler} className="m-5 w-full">
       <p className="text-lg font-medium mb-3">Add Doctor</p>
@@ -171,7 +221,6 @@ const onSubmitHandler=async(e)=>{
           />
         </div>
         <button
-       
           type="submit"
           className=" cursor-pointer bg-primary text-white mt-4 px-10 py-3 rounded-full"
         >
