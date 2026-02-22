@@ -111,5 +111,15 @@ const adminLogin = async (req, res) => {
       .json({ success: false, message: "Error during admin login", error: error.message });
   }
 };
+//api for getting doctors list for admin panel
+const allDoctors = async (req, res) => {
+  try {
+    const doctors = await DoctorModel.find({}).select("-password"); // Exclude password field
+    res.json({ success: true, doctors });
+  } catch (error) {
+    console.error("Error fetching doctors:", error);
+    res.status(500).json({ success: false, message: "Error fetching doctors", error: error.message });
+  }
+};
 
-export { addDoctor, adminLogin };
+export { addDoctor, adminLogin, allDoctors };
