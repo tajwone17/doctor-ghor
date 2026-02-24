@@ -1,8 +1,9 @@
-//API to register a user
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import JWT from "jsonwebtoken";
+
+//API to register a user
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -40,7 +41,7 @@ const registerUser = async (req, res) => {
     });
     await newUser.save();
     //token generation
-    const token = JWT.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, {
+    const token = JWT.sign({ email: newUser.email }, process.env.JWT_SECRET_KEY, {
       expiresIn: "1d",
     });
     res
@@ -52,4 +53,24 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { registerUser };
+//API for user login
+const loginUser=async(req,res)=>{
+    const {email,password}=req.body;
+    if(!email || !password){
+        return res.status(400).json({message:"Please fill all fields"});
+    }
+    const user=await User.findOne({email});
+    if(!user){
+        return res.status(400).json({message:"Invalid email or password"});
+
+    }
+    const isMatch=await bcrypt.compare(password,user.password);
+    if(!isMatch){
+        return res.status(400).json({message:"Invalid email or password"});
+    }
+    const token=JWT.sign({email},process.env.JWT_SECRET_KEY,{expiresIn:"1d"});
+    res.status(200).json({success:true,message:"User logged in successfully",token});
+
+}
+
+export { registerUser, loginUser };
