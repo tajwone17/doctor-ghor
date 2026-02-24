@@ -16,9 +16,7 @@ const AdminContextProvider = (props) => {
       if (data.success) {
         setDoctors(data.doctors);
         console.log("Doctors fetched successfully:", data.doctors);
-      }
-      else
-      {
+      } else {
         toast.error(data.message);
         console.error("Failed to fetch doctors:", data.message);
       }
@@ -27,8 +25,27 @@ const AdminContextProvider = (props) => {
       console.error("Error fetching doctors:", error);
     }
   };
+  const changeAvailablity = async (doctorId) => {
+    try {
+      const { data } = await axios.post(`${BACKEND_URL}/api/admin/change-availablity`, { doctorId }, {
+        headers: {
+          atoken: aToken,
+        },
+      });
 
-  const value = { aToken, setAtoken, BACKEND_URL, doctors, getAllDoctors };
+      if(data.success){
+        toast.success(data.message);
+        getAllDoctors(); // Refresh the doctors list to reflect the updated availability
+      } else {
+        toast.error(data.message);
+        console.error("Failed to change doctor availability:", data.message);
+      }
+    } catch (error) {
+      toast.error("Error changing doctor availability");
+      console.error("Error changing doctor availability:", error);
+    }
+  };
+  const value = { aToken, setAtoken, BACKEND_URL, doctors, getAllDoctors, changeAvailablity };
   return (
     <AdminContext.Provider value={value}>
       {props.children}
