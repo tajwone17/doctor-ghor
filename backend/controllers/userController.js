@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import JWT from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
 
 //API to register a user
 const registerUser = async (req, res) => {
@@ -41,13 +42,9 @@ const registerUser = async (req, res) => {
     });
     await newUser.save();
     //token generation
-    const token = JWT.sign(
-      { id:user._id },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "1d",
-      },
-    );
+    const token = JWT.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
     res
       .status(201)
       .json({ success: true, message: "User registered successfully", token });
@@ -71,7 +68,7 @@ const loginUser = async (req, res) => {
   if (!isMatch) {
     return res.status(400).json({ message: "Invalid email or password" });
   }
-  const token = JWT.sign({ id:user._id }, process.env.JWT_SECRET_KEY, {
+  const token = JWT.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: "1d",
   });
   res
@@ -84,20 +81,50 @@ const getUserDetails = async (req, res) => {
   try {
     const { userId } = req.body;
     const userData = await User.findById(userId).select("-password");
-    
+
     // console.log("userId:", userId);
     // console.log("userData:", userData);
-    
+
     res.status(200).json({
       success: true,
       message: "User details fetched successfully",
-      userData
+      userData,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+    console.log(error);
+  }
+};
+const updateUserDetails = async (req, res) => {
+  try {
+    const { userId, name, phone, address, dob, gender } = req.body;
+    const imageFile = req.file; // Access the uploaded file
+
+    if (!name || !phone || !address || !dob || !gender) {
+      return res.status(400).json({ message: "Please fill all fields" });
+    }
+
+    await User.findByIdAndUpdate(userId, {
+      name,
+      phone,
+      address: JSON.parse(address), // Convert the address string back to an object
+      dob,
+      gender,
     });
 
+    if (imageFile) {
+      //upload image to cloudinary
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: image,
+      });
+      const imageUrl = imageUpload.secure_url;
+      await User.findByIdAndUpdate(userId, { image: imageUrl });
+    }
+    res.json({ success: true, message: "User details updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
     console.log(error);
   }
 };
 
-export { registerUser, loginUser, getUserDetails };
+export { registerUser, loginUser, getUserDetails, updateUserDetails };
