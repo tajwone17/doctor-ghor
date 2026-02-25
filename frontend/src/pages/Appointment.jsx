@@ -72,6 +72,7 @@ const Appointment = () => {
   }, [docSlot]);
 
   const fetchDocInfo = async () => {
+    if (!doctors || doctors.length === 0) return;
     const doctor = doctors.find((doc) => doc._id === docId);
     setDoctorInfo(doctor);
   };
@@ -158,7 +159,9 @@ const Appointment = () => {
                 </p>
               ))}
           </div>
-          <button className="bg-primary text-white text-sm px-14 rounded-full font-light py-3 my-6 cursor-pointer hover:bg-white hover:border hover:border-primary hover:text-primary">Book an Appointment</button>
+          <button className="bg-primary text-white text-sm px-14 rounded-full font-light py-3 my-6 cursor-pointer hover:bg-white hover:border hover:border-primary hover:text-primary">
+            Book an Appointment
+          </button>
         </div>
         {/* Listing related doctors */}
         <RelatedDoctors docId={docId} speciality={doctorInfo?.speciality} />

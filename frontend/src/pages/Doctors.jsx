@@ -9,6 +9,8 @@ const Doctors = () => {
   const navigate = useNavigate();
   const [showFilter, setShowFilter] = useState(false);
   const applyFilter = () => {
+    if (!doctors) return; // Guard clause if doctors is not loaded yet
+
     let filtered = doctors;
 
     // Filter by specialty
@@ -131,16 +133,16 @@ const Doctors = () => {
               <img
                 src={doctor.image}
                 alt={doctor.name}
-                className={` ${doctor.status == "Available" ? "bg-green-50" : "bg-red-50"}`}
+                className={` ${doctor.available == true ? "bg-green-50" : "bg-red-50"}`}
               />
               <div className="p-4">
                 <div
-                  className={`flex items-center gap-2 text-sm text-center  ${doctor.status == "Available" ? "text-green-500" : "text-red-500"}`}
+                  className={`flex items-center gap-2 text-sm text-center  ${doctor.available == true ? "text-green-500" : "text-red-500"}`}
                 >
                   <p
-                    className={`w-2 h-2 ${doctor.status == "Available" ? "bg-blue-500" : "bg-red-500"} rounded-full`}
+                    className={`w-2 h-2 ${doctor.available == true ? "bg-green-500" : "bg-red-500"} rounded-full`}
                   ></p>
-                  <p>{doctor.status}</p>
+                  <p>{doctor.available ? "Available" : "Not Available"}</p>
                 </div>
                 <p className="text-gray-900 text-lg font-medium">
                   {doctor.name}
