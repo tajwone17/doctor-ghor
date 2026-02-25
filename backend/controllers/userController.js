@@ -84,13 +84,15 @@ const getUserDetails = async (req, res) => {
   try {
     const { userId } = req.body;
     const userData = await User.findById(userId).select("-password");
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "User details fetched successfully",
-        userData,
-      });
+    
+    // console.log("userId:", userId);
+    // console.log("userData:", userData);
+    
+    res.status(200).json({
+      success: true,
+      message: "User details fetched successfully",
+      userData
+    });
 
   } catch (error) {
     res.status(500).json({ message: "Server error" });
