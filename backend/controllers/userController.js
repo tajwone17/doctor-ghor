@@ -41,9 +41,13 @@ const registerUser = async (req, res) => {
     });
     await newUser.save();
     //token generation
-    const token = JWT.sign({ email: newUser.email }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    const token = JWT.sign(
+      { id:user._id },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1d",
+      },
+    );
     res
       .status(201)
       .json({ success: true, message: "User registered successfully", token });
@@ -54,23 +58,44 @@ const registerUser = async (req, res) => {
 };
 
 //API for user login
-const loginUser=async(req,res)=>{
-    const {email,password}=req.body;
-    if(!email || !password){
-        return res.status(400).json({message:"Please fill all fields"});
-    }
-    const user=await User.findOne({email});
-    if(!user){
-        return res.status(400).json({message:"Invalid email or password"});
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Please fill all fields" });
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ message: "Invalid email or password" });
+  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid email or password" });
+  }
+  const token = JWT.sign({ id:user._id }, process.env.JWT_SECRET_KEY, {
+    expiresIn: "1d",
+  });
+  res
+    .status(200)
+    .json({ success: true, message: "User logged in successfully", token });
+};
+//api to get user details
 
-    }
-    const isMatch=await bcrypt.compare(password,user.password);
-    if(!isMatch){
-        return res.status(400).json({message:"Invalid email or password"});
-    }
-    const token=JWT.sign({email},process.env.JWT_SECRET_KEY,{expiresIn:"1d"});
-    res.status(200).json({success:true,message:"User logged in successfully",token});
+const getUserDetails = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const userData = await User.findById(userId).select("-password");
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "User details fetched successfully",
+        userData,
+      });
 
-}
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+    console.log(error);
+  }
+};
 
-export { registerUser, loginUser };
+export { registerUser, loginUser, getUserDetails };
