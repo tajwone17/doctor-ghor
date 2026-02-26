@@ -79,7 +79,7 @@ const loginUser = async (req, res) => {
 
 const getUserDetails = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.userId;
     const userData = await User.findById(userId).select("-password");
 
     // console.log("userId:", userId);
@@ -97,7 +97,8 @@ const getUserDetails = async (req, res) => {
 };
 const updateUserDetails = async (req, res) => {
   try {
-    const { userId, name, phone, address, dob, gender } = req.body;
+    const userId = req.userId;
+    const { name, phone, address, dob, gender } = req.body;
     const imageFile = req.file; // Access the uploaded file
 
     if (!name || !phone || !address || !dob || !gender) {

@@ -12,8 +12,7 @@ const authUser = (req, res, next) => {
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-
-    req.body.userId = decoded.id;
+    req.userId = decoded.id;
 
     next();
   } catch (error) {
