@@ -1,13 +1,17 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContextInstance";
 import { assets } from "../assets/assets_frontend/assets";
 import RelatedDoctors from "../components/RelatedDoctors";
+import { toast } from "react-toastify";
+import axios from "axios";
 const Appointment = () => {
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const { docId } = useParams();
-  const { doctors, currencySymbol } = useContext(AppContext);
+  const { doctors, currencySymbol, BACKEND_URL, token,getAllDoctors } =
+    useContext(AppContext);
   const [doctorInfo, setDoctorInfo] = useState(null);
+  const navigate = useNavigate();
   const docSlot = useMemo(() => {
     if (!doctorInfo) return [];
     const slots = [];
@@ -76,6 +80,42 @@ const Appointment = () => {
     const doctor = doctors.find((doc) => doc._id === docId);
     setDoctorInfo(doctor);
   };
+
+  const bookAppointment = async () => {
+    if (!token) {
+      toast.warn("Please login to book an appointment");
+      return navigate("/login");
+    }
+    if (!slotTime) {
+      toast.warn("Please select a slot");
+      return;
+    }
+    try {
+      const date = groupedSlots[slotIndex].date;
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+      let slotDate = day + "_" + month + "_" + year;
+      const { data } = await axios.post(
+        `${BACKEND_URL}/api/user/book-appointment`,
+        { docId, slotDate, slotTime },
+        {
+          headers: { token },
+        },
+      );
+      if (data.success) {
+        toast.success("Appointment booked successfully");
+        getAllDoctors();
+        navigate("/my-appointments");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Error booking appointment");
+      console.error("Error booking appointment:", error);
+    }
+  };
+
   useEffect(() => {
     //eslint-disable-next-line
     fetchDocInfo();
@@ -159,7 +199,10 @@ const Appointment = () => {
                 </p>
               ))}
           </div>
-          <button className="bg-primary text-white text-sm px-14 rounded-full font-light py-3 my-6 cursor-pointer hover:bg-white hover:border hover:border-primary hover:text-primary">
+          <button
+            onClick={bookAppointment}
+            className="bg-primary text-white text-sm px-14 rounded-full font-light py-3 my-6 cursor-pointer hover:bg-white hover:border hover:border-primary hover:text-primary"
+          >
             Book an Appointment
           </button>
         </div>
