@@ -8,7 +8,7 @@ import axios from "axios";
 const Appointment = () => {
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const { docId } = useParams();
-  const { doctors, currencySymbol, BACKEND_URL, token,getAllDoctors } =
+  const { doctors, currencySymbol, BACKEND_URL, token, getAllDoctors } =
     useContext(AppContext);
   const [doctorInfo, setDoctorInfo] = useState(null);
   const navigate = useNavigate();
@@ -44,11 +44,24 @@ const Appointment = () => {
           hour: "2-digit",
           minute: "2-digit",
         });
-        //add slot to array
-        timeSlots.push({
-          dateTime: new Date(currentDate),
-          formattedTime: formattedTime,
-        });
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
+
+        const slotDate = day + "_" + month + "_" + year;
+        const slotTime = formattedTime;
+        const isSlotAvailable =
+          doctorInfo.slots_booked[slotDate] &&
+          doctorInfo.slots_booked[slotDate].includes(slotTime)
+            ? false
+            : true;
+        if (isSlotAvailable) {
+          //add slot to array
+          timeSlots.push({
+            dateTime: new Date(currentDate),
+            formattedTime: formattedTime,
+          });
+        }
         //Increment by 30 minutes
         currentDate.setMinutes(currentDate.getMinutes() + 30);
       }

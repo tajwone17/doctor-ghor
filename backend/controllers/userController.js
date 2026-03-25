@@ -157,7 +157,7 @@ const bookAppointment = async (req, res) => {
 
     const userData = await User.findById(userId).select("-password");
 
-    const docDataPlain = docData.toObject(); 
+    const docDataPlain = docData.toObject();
     delete docDataPlain.slots_booked;
 
     const appointmentData = {
@@ -175,11 +175,21 @@ const bookAppointment = async (req, res) => {
     await newAppointment.save();
     await Doctor.findByIdAndUpdate(docId, { slots_booked });
 
-    res.json({ success: true, message: "Appointment booked successfully", appointmentData });
+    res.json({
+      success: true,
+      message: "Appointment booked successfully",
+      appointmentData,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
     console.log(error);
   }
 };
 
-export { registerUser, loginUser, getUserDetails, updateUserDetails, bookAppointment };
+export {
+  registerUser,
+  loginUser,
+  getUserDetails,
+  updateUserDetails,
+  bookAppointment,
+};
