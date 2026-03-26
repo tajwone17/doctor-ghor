@@ -11,7 +11,7 @@ const authAdmin = (req, res, next) => {
         .json({ success: false, message: "Unauthorized - No token provided" });
     }
     const decoded = jwt.verify(atoken, process.env.JWT_SECRET_KEY);
-    
+
     // Only check email in the token (password should NOT be in JWT)
     if (decoded.email !== process.env.ADMIN_EMAIL) {
       return res
@@ -23,7 +23,10 @@ const authAdmin = (req, res, next) => {
     if (error.name === "TokenExpiredError") {
       return res
         .status(401)
-        .json({ success: false, message: "Session expired. Please login again." });
+        .json({
+          success: false,
+          message: "Session expired. Please login again.",
+        });
     }
     res.status(401).json({ success: false, message: "Unauthorized" });
   }

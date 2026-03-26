@@ -41,13 +41,17 @@ const AdminContextProvider = (props) => {
   };
   const changeAvailablity = async (doctorId) => {
     try {
-      const { data } = await axios.post(`${BACKEND_URL}/api/admin/change-availablity`, { doctorId }, {
-        headers: {
-          atoken: aToken,
+      const { data } = await axios.post(
+        `${BACKEND_URL}/api/admin/change-availablity`,
+        { doctorId },
+        {
+          headers: {
+            atoken: aToken,
+          },
         },
-      });
+      );
 
-      if(data.success){
+      if (data.success) {
         toast.success(data.message);
         getAllDoctors(); // Refresh the doctors list to reflect the updated availability
       } else {
@@ -60,7 +64,14 @@ const AdminContextProvider = (props) => {
       console.error("Error changing doctor availability:", error);
     }
   };
-  const value = { aToken, setAtoken, BACKEND_URL, doctors, getAllDoctors, changeAvailablity };
+  const value = {
+    aToken,
+    setAtoken,
+    BACKEND_URL,
+    doctors,
+    getAllDoctors,
+    changeAvailablity,
+  };
   return (
     <AdminContext.Provider value={value}>
       {props.children}
