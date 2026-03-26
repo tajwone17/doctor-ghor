@@ -15,16 +15,17 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 //middlewares
-import cors from "cors";
 
-app.use(cors({
-  origin: [
-    "https://doctor-ghor.vercel.app/",
-    "https://doctor-ghor-h46p.vercel.app/"
-  ],
-  methods: ["GET","POST","PUT","DELETE"],
-  credentials: true
-}));
+
+// app.use(cors({
+//   origin: [
+//     "https://doctor-ghor.vercel.app/",
+//     "https://doctor-ghor-h46p.vercel.app/"
+//   ],
+//   methods: ["GET","POST","PUT","DELETE"],
+//   credentials: true
+// }));
+app.use(cors());
 app.use(express.json());
 
 //api endpoints

@@ -2,13 +2,27 @@ import { AppContext } from "./AppContextInstance";
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 const AppContextProvider = (props) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [doctors, setDoctors] = useState([]);
   const [userData, setUserData] = useState(false);
-  const getAllDoctors = async () => {
+
+  const handleAuthError = (error) => {
+    if (error?.response?.status === 401) {
+      localStorage.removeItem("token");
+      setToken(null);
+      setUserData(false);
+      toast.error(
+        error.response?.data?.message || "Session expired. Please login again.",
+      );
+      return true;
+    }
+    return false;
+  };
+
+  const getAllDoctors = useCallback(async () => {
     try {
       const { data } = await axios.get(`${BACKEND_URL}/api/doctor/list`);
       if (data.success) {
@@ -22,9 +36,9 @@ const AppContextProvider = (props) => {
       toast.error("Error fetching doctors");
       console.error("Error fetching doctors:", error);
     }
-  };
+  }, [BACKEND_URL]);
 
-  const loadUserProfileData = async () => {
+  const loadUserProfileData = useCallback(async () => {
     try {
       const { data } = await axios.get(
         `${BACKEND_URL}/api/user/get-user-info`,
@@ -40,22 +54,25 @@ const AppContextProvider = (props) => {
         console.error("Failed to fetch user data:", data.message);
       }
     } catch (error) {
+      if (handleAuthError(error)) return;
       toast.error("Error fetching user data");
       console.error("Error fetching user data:", error);
     }
-  };
+  }, [BACKEND_URL, token]);
+
   useEffect(() => {
     if (token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadUserProfileData();
     } else {
       setUserData(false);
     }
-  }, [token]);
+  }, [token, loadUserProfileData]);
 
   useEffect(() => {
-    //eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     getAllDoctors();
-  }, []);
+  }, [getAllDoctors]);
 
   const currencySymbol = "$";
   const value = {

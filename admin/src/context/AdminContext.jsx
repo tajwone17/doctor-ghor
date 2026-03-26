@@ -6,6 +6,19 @@ const AdminContextProvider = (props) => {
   const [aToken, setAtoken] = useState(localStorage.getItem("aToken") || null);
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [doctors, setDoctors] = useState([]);
+
+  const handleAuthError = (error) => {
+    if (error?.response?.status === 401) {
+      localStorage.removeItem("aToken");
+      setAtoken(null);
+      toast.error(
+        error.response?.data?.message || "Session expired. Please login again.",
+      );
+      return true;
+    }
+    return false;
+  };
+
   const getAllDoctors = async () => {
     try {
       const { data } = await axios.get(`${BACKEND_URL}/api/admin/all-doctors`, {
@@ -21,6 +34,7 @@ const AdminContextProvider = (props) => {
         console.error("Failed to fetch doctors:", data.message);
       }
     } catch (error) {
+      if (handleAuthError(error)) return;
       toast.error("Error fetching doctors");
       console.error("Error fetching doctors:", error);
     }
@@ -41,6 +55,7 @@ const AdminContextProvider = (props) => {
         console.error("Failed to change doctor availability:", data.message);
       }
     } catch (error) {
+      if (handleAuthError(error)) return;
       toast.error("Error changing doctor availability");
       console.error("Error changing doctor availability:", error);
     }
