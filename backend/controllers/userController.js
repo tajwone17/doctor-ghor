@@ -6,6 +6,7 @@ import validator from "validator";
 import JWT from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 
+
 //API to register a user
 const registerUser = async (req, res) => {
   try {
@@ -218,11 +219,13 @@ const cancelAppointment = async (req, res) => {
 
     await Appointment.findByIdAndUpdate(appointmentId, { cancelled: true });
     //releasing doctor slot
-    const {docId,slotDate,slotTime}=appointmentData
-    const doctorData=await Doctor.findById(docId);
-    let slots_booked=doctorData.slots_booked;
-    slots_booked[slotDate]=slots_booked[slotDate].filter((time)=>time!==slotTime);
-    await Doctor.findByIdAndUpdate(docId,{slots_booked});
+    const { docId, slotDate, slotTime } = appointmentData;
+    const doctorData = await Doctor.findById(docId);
+    let slots_booked = doctorData.slots_booked;
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (time) => time !== slotTime,
+    );
+    await Doctor.findByIdAndUpdate(docId, { slots_booked });
 
     res.json({ success: true, message: "Appointment cancelled successfully" });
   } catch (error) {
@@ -230,6 +233,7 @@ const cancelAppointment = async (req, res) => {
     console.log(error);
   }
 };
+
 export {
   registerUser,
   loginUser,
